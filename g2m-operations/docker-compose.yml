@@ -1,0 +1,38 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: node:20-alpine
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "npm install --omit=dev && node src/server.js"
+    environment:
+      MONGO_URL: mongodb://mongo:27017/g2m
+      PORT: "4000"
+      UPLOAD_DIR: /data/uploads
+      WEB_DIR: /app/web
+      TZ: Africa/Nairobi
+    volumes:
+      - ./server:/app
+      - ./web/dist:/app/web:ro     # run `npm run build` in web/ first
+      - uploads:/data/uploads      # field photos — back this up with the database
+    ports:
+      - "4000:4000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo-data:
+  uploads:
