@@ -18,7 +18,7 @@ services:
     working_dir: /app
     command: sh -c "npm install --omit=dev && node src/server.js"
     environment:
-      MONGO_URL: mongodb://mongo:27017/g2m
+      MONGO_URL: mongodb+srv://househunting:0VPC8JKm0VU6sMxF@cluster0.opm7xuy.mongodb.net/
       PORT: "4000"
       UPLOAD_DIR: /data/uploads
       WEB_DIR: /app/web
